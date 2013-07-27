@@ -4,10 +4,11 @@
   <script type='text/javascript' src='javascripts/jquery.js'></script>
   <script type='text/javascript' src='javascripts/handlebars.js'></script>
   <script type='text/javascript' src='javascripts/ember.js'></script>
+  <script type='text/javascript' src='javascripts/infinite_scroll.js'></script>
 
   <script type='text/javascript'>
 
-  var App = Ember.Application.create({LOG_TRANSITIONS:true});
+  var App = Ember.Application.create();
 
   App.IndexRoute = Ember.Route.extend({
     model: function(){
@@ -17,76 +18,20 @@
       }
       return items;
     },
-    events: {
-      getMore: function() {
-        var controller = this.get('controller'),
-            nextPage = controller.get('page') + 1,
-            perPage = controller.get('perPage'),
-            that = this,
-            items;
-
-        Ember.run.later( function() {
-          items = that.events.fetchPage(nextPage, perPage);
-          controller.gotMore( items, nextPage);
-        }, 1000);
-      },
-      fetchPage: function(page, perPage){
-        var items = Em.A([]);
-        var firstIndex = (page-1) * perPage;
-        var lastIndex  = page * perPage;
-        for (var i = firstIndex; i < lastIndex; i++) {
-          items.pushObject({name:i});
-        }
-
-        return items;
-      }
-    }
+    events: $.extend({}, InfiniteScroll.RouteEvents)
   });
 
-  App.IndexController = Ember.ArrayController.extend({
-    loadingMore: false,
-    page: 1,
-    perPage: 10,
+  App.IndexController = Ember.ArrayController.extend(
+    InfiniteScroll.ControllerMixin,
+    {perPage: 10}
+  );
 
-    getMore: function(){
-      if (this.get('loadingMore')) return;
-
-      this.set('loadingMore', true);
-      this.get('target').send('getMore');
-    },
-    gotMore: function(items, nextPage){
-      this.set('loadingMore', false);
-      this.pushObjects(items);
-      this.set('page', nextPage);
-    }
-  });
-  App.WidgetView = Ember.View.extend({tagName: 'li'});
-
-  App.IndexView = Ember.View.extend({
-    init: function(){
-      this._super();
-      this.set('boundedDidScroll', $.proxy(this.didScroll,this));
-    },
+  App.IndexView = Ember.View.extend(InfiniteScroll.ViewMixin, {
     didInsertElement: function(){
-      $(window).bind('scroll', this.get('boundedDidScroll'));
+      this.setupInfiniteScrollListener();
     },
     willDestroyElement: function(){
-      $(window).unbind('scroll', this.get('boundedDidScroll'));
-    },
-    didScroll: function(){
-      if (this.isScrolledToBottom()) {
-        this.get('controller').send('getMore');
-      }
-    },
-    isScrolledToBottom: function(){
-      var distanceToTop = $(document).height() - $(window).height(),
-          top           = $(document).scrollTop();
-
-      if (top == 0) {
-        return false;
-      }
-
-      return (top - distanceToTop == 0);
+      this.teardownInfiniteScrollListener();
     }
   });
   </script>
@@ -118,9 +63,8 @@ INDEX TEMPLATE
 </script>
 
 <script data-template-name="widget" type="text/x-handlebars">
-  Widget: {{name}}
+  <li>Widget: {{name}}</li>
 </script>
-
 
 </body>
 </html>
