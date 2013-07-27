@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script type='text/javascript' src='javascripts/jquery.js'></script>
+  <script type='text/javascript' src='javascripts/handlebars.js'></script>
+  <script type='text/javascript' src='javascripts/ember.js'></script>
+
+  <script type='text/javascript'>
+
+  var App = Ember.Application.create({LOG_TRANSITIONS:true});
+
+  App.IndexRoute = Ember.Route.extend({
+    model: function(){
+      var items = Em.A([]);
+      for (var i = 0; i < 10; i++) {
+        items.pushObject({name: ''+i});
+      }
+      return items;
+    },
+    events: {
+      getMore: function() {
+        var controller = this.get('controller'),
+            nextPage = controller.get('page') + 1,
+            perPage = controller.get('perPage'),
+            that = this,
+            items;
+
+        Ember.run.later( function() {
+          items = that.events.fetchPage(nextPage, perPage);
+          controller.gotMore( items, nextPage);
+        }, 1000);
+      },
+      fetchPage: function(page, perPage){
+        var items = Em.A([]);
+        var firstIndex = (page-1) * perPage;
+        var lastIndex  = page * perPage;
+        for (var i = firstIndex; i < lastIndex; i++) {
+          items.pushObject({name:i});
+        }
+
+        return items;
+      }
+    }
+  });
+
+  App.IndexController = Ember.ArrayController.extend({
+    loadingMore: false,
+    page: 1,
+    perPage: 10,
+
+    getMore: function(){
+      if (this.get('loadingMore')) return;
+
+      this.set('loadingMore', true);
+      this.get('target').send('getMore');
+    },
+    gotMore: function(items, nextPage){
+      this.set('loadingMore', false);
+      this.pushObjects(items);
+      this.set('page', nextPage);
+    }
+  });
+  App.WidgetView = Ember.View.extend({tagName: 'li'});
+
+  App.IndexView = Ember.View.extend({
+    init: function(){
+      this._super();
+      this.set('boundedDidScroll', $.proxy(this.didScroll,this));
+    },
+    didInsertElement: function(){
+      $(window).bind('scroll', this.get('boundedDidScroll'));
+    },
+    willDestroyElement: function(){
+      $(window).unbind('scroll', this.get('boundedDidScroll'));
+    },
+    didScroll: function(){
+      if (this.isScrolledToBottom()) {
+        this.get('controller').send('getMore');
+      }
+    },
+    isScrolledToBottom: function(){
+      var distanceToTop = $(document).height() - $(window).height(),
+          top           = $(document).scrollTop();
+
+      if (top == 0) {
+        return false;
+      }
+
+      return (top - distanceToTop == 0);
+    }
+  });
+  </script>
+</head>
+<body>
+
+<h1>Hi</h1>
+
+<script data-template-name="application" type="text/x-handlebars">
+APPLICATION TEMPLATE
+{{outlet}}
+</script>
+
+<script data-template-name="index" type="text/x-handlebars">
+INDEX TEMPLATE
+
+<h2>Widgets ({{model.length}})</h2>
+<ul>
+  {{#each widget in controller}}
+    {{render 'widget' widget}}
+  {{/each}}
+</ul>
+
+{{#if loadingMore}}
+  Loading more...
+{{else}}
+  <a href='#' {{action 'getMore'}}>Get More...</a>
+{{/if}}
+</script>
+
+<script data-template-name="widget" type="text/x-handlebars">
+  Widget: {{name}}
+</script>
+
+
+</body>
+</html>
