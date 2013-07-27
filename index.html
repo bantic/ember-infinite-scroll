@@ -41,14 +41,11 @@
 <h1>Hi</h1>
 
 <script data-template-name="application" type="text/x-handlebars">
-APPLICATION TEMPLATE
 {{outlet}}
 </script>
 
 <script data-template-name="index" type="text/x-handlebars">
-INDEX TEMPLATE
-
-<h2>Widgets ({{model.length}})</h2>
+<h2>Widgets ({{content.length}})</h2>
 <ul>
   {{#each widget in controller}}
     {{render 'widget' widget}}

@@ -22,7 +22,7 @@
       var firstIndex = (page-1) * perPage;
       var lastIndex  = page * perPage;
       for (var i = firstIndex; i < lastIndex; i++) {
-        items.pushObject({name:i});
+        items.pushObject({name:''+i});
       }
 
       return items;
