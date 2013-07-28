@@ -1,11 +1,11 @@
-== Ember Infinite Scroll Mixin
+## Ember Infinite Scroll Mixin
 
 This repo contains a file `infinite_scroll.js` that adds a global
 `InfiniteScroll` to `window` with several mixins (for Route, Controller
 and View) that you can use to add infinite scrolling capability to your
 ember project.
 
-== Installation Instructions
+## Installation Instructions
 
  * Download and include `infinite_scroll.js` to your project. Include it after jQuery and Ember have been loaded.  
  * Mix in `InfiniteScroll.ControllerMixin` into your controller:
@@ -83,9 +83,11 @@ Default values are 25 and 1, respectively. Example change:
  * If wanted, use the `loadingMore` property in your template to show a
 spinner or otherwise alert the user that new content is loading.
 
-== Demo
+## Demo
 
-See the [jsbin here](http://jsbin.com/epepob/2/edit) for an demo app using the InfiniteScroll mixins.
+See the [jsbin here](http://jsbin.com/epepob/2/edit) for a live demo app using the InfiniteScroll mixins.
+
+There is also a fully-functional example in the example/ dir.
 
 All together, an example App using the mixins might look like this:
 
@@ -153,6 +155,6 @@ App.IndexView = Ember.View.extend(InfiniteScroll.ViewMixin, {
 });
 ```
 
-== Feedback
+## Feedback
 
 Questions or comments? I am on twitter @bantic. Pull requests welcome.
