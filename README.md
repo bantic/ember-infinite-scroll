@@ -80,6 +80,8 @@ Default values are 25 and 1, respectively. Example change:
     }
   );
 ```
+ * If wanted, use the `loadingMore` property in your template to show a
+spinner or otherwise alert the user that new content is loading.
 
 == Demo
 
