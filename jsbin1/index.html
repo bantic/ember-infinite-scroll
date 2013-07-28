@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script type='text/javascript' src='../javascripts/jquery.js'></script>
+  <script type='text/javascript' src='../javascripts/handlebars.js'></script>
+  <script type='text/javascript' src='../javascripts/ember.js'></script>
+
+  <script type='text/javascript'>
+
+  var App = Ember.Application.create();
+
+  App.IndexRoute = Ember.Route.extend({
+    model: function(){
+      var items = Em.A([]);
+      for (var i = 0; i < 10; i++) {
+        items.pushObject({name: ''+i});
+      }
+      return items;
+    },
+    events: {
+      getMore: function() {
+        var controller = this.get('controller'),
+            nextPage = controller.get('page') + 1,
+            perPage = controller.get('perPage'),
+            items;
+
+        items = this.events.fetchPage(nextPage, perPage);
+
+        // alert the controller to the new data
+        controller.gotMore(items, nextPage);
+      },
+      // load another page's worth of fake widgets
+      fetchPage: function(page, perPage) {
+        var items = Em.A([]);
+        var firstIndex = (page-1) * perPage;
+        var lastIndex  = page * perPage;
+        for (var i = firstIndex; i < lastIndex; i++) {
+          items.pushObject({name:''+i});
+        }
+
+        return items;
+      }
+    }
+  });
+
+  App.IndexController = Ember.ArrayController.extend({
+    // add properties
+    page: 1,
+    perPage: 10,
+
+    getMore: function() {
+      // don't load new data if we already are
+      if (this.get('loadingMore')) return;
+
+      this.set('loadingMore', true);
+
+      // pass this action up the chain to the events hash on the route
+      this.get('target').send('getMore');
+    },
+
+    // Also add a method `gotMore` that the route can call back to
+    // notify the controller that the new data is in and it can stop
+    // showing its loading indicator
+    gotMore: function(items, page) {
+      this.set('loadingMore', false);
+      this.set('page', page);
+
+      this.pushObjects(items);
+    }
+  });
+
+  </script>
+</head>
+<body>
+
+<script data-template-name="application" type="text/x-handlebars">
+{{partial 'about'}}
+{{outlet}}
+</script>
+
+<script data-template-name="index" type="text/x-handlebars">
+<h2>Widgets (Page {{page}}: {{content.length}} total widgets)</h2>
+<ul>
+  {{#each widget in controller}}
+    <li>Widget: {{widget.name}}</li>
+  {{/each}}
+</ul>
+{{#if loadingMore}}
+  Loading more...
+{{else}}
+  <a href='#' {{action 'getMore'}}>Get More...</a>
+{{/if}}
+</script>
+
+<script data-template-name="_about" type="text/x-handlebars">
+  This is a jsbin to demonstrate an infinite scrolling pattern with
+  ember.js. For more details, see this blog post LINK or the
+  `InfinteScroll` ember add-on. LINK.
+  Created by <a href='http://twitter.com/bantic'>Cory Forsyth</a>.
+</script>
+
+</body>
+</html>

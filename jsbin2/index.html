@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script type='text/javascript' src='../javascripts/jquery.js'></script>
+  <script type='text/javascript' src='../javascripts/handlebars.js'></script>
+  <script type='text/javascript' src='../javascripts/ember.js'></script>
+
+  <style type='text/css'>
+    li {
+      background-color: #CCC;
+      height: 60px;
+      line-height: 60px;
+      width: 30%;
+    }
+  </style>
+
+  <script type='text/javascript'>
+
+  var App = Ember.Application.create();
+
+  App.IndexRoute = Ember.Route.extend({
+    model: function(){
+      var items = Em.A([]);
+      for (var i = 0; i < 10; i++) {
+        items.pushObject({name: ''+i});
+      }
+      return items;
+    },
+    events: {
+      getMore: function() {
+        var controller = this.get('controller'),
+            nextPage = controller.get('page') + 1,
+            perPage = controller.get('perPage'),
+            items;
+
+        items = this.events.fetchPage(nextPage, perPage);
+
+        // add delay to simulate API latency
+        Ember.run.later(function(){
+          // alert the controller to the new data
+          controller.gotMore(items, nextPage);
+        }, 1000);
+      },
+      // load another page's worth of fake widgets
+      fetchPage: function(page, perPage) {
+        var items = Em.A([]);
+        var firstIndex = (page-1) * perPage;
+        var lastIndex  = page * perPage;
+        for (var i = firstIndex; i < lastIndex; i++) {
+          items.pushObject({name:''+i});
+        }
+
+        return items;
+      }
+    }
+  });
+
+  App.IndexController = Ember.ArrayController.extend({
+    // add properties
+    page: 1,
+    perPage: 10,
+
+    getMore: function() {
+      // don't load new data if we already are
+      if (this.get('loadingMore')) return;
+
+      this.set('loadingMore', true);
+
+      // pass this action up the chain to the events hash on the route
+      this.get('target').send('getMore');
+    },
+
+    // Also add a method `gotMore` that the route can call back to
+    // notify the controller that the new data is in and it can stop
+    // showing its loading indicator
+    gotMore: function(items, page) {
+      this.set('loadingMore', false);
+      this.set('page', page);
+
+      this.pushObjects(items);
+    }
+  });
+
+  App.IndexView = Ember.View.extend({
+    didInsertElement: function(){
+      // we want to make sure 'this' inside `didScroll` refers
+      // to the IndexView, so we use jquery's `proxy` method to bind it
+      $(window).on('scroll', $.proxy(this.didScroll, this));
+    },
+
+    willDestroyElement: function(){
+      // have to use the same argument to `off` that we did to `on`
+      $(window).off('scroll', $.proxy(this.didScroll, this));
+    },
+
+    // this is called every time we scroll
+    didScroll: function(){
+      if (this.isScrolledToBottom()) {
+        this.get('controller').send('getMore');
+      }
+    },
+
+    // we check if we are at the bottom of the page
+    isScrolledToBottom: function(){
+      var distanceToViewportTop = (
+        $(document).height() - $(window).height());
+      var viewPortTop = $(document).scrollTop();
+
+      if (viewPortTop === 0) {
+        // if we are at the top of the page, don't do
+        // the infinite scroll thing
+        return false;
+      }
+
+      return (viewPortTop - distanceToViewportTop === 0);
+    }
+  });
+
+  </script>
+</head>
+<body>
+
+<script data-template-name="application" type="text/x-handlebars">
+{{partial 'about'}}
+{{outlet}}
+</script>
+
+<script data-template-name="index" type="text/x-handlebars">
+<h2>Widgets (Page {{page}}: {{content.length}} total widgets)</h2>
+<ul>
+  {{#each widget in controller}}
+    <li>Widget: {{widget.name}}</li>
+  {{/each}}
+</ul>
+{{#if loadingMore}}
+  Loading more...
+{{else}}
+  <a href='#' {{action 'getMore'}}>Get More...</a>
+{{/if}}
+</script>
+
+<script data-template-name="_about" type="text/x-handlebars">
+  This is a jsbin to demonstrate an infinite scrolling pattern with
+  ember.js. For more details, see this blog post LINK or the
+  `InfinteScroll` ember add-on. LINK.
+  Created by <a href='http://twitter.com/bantic'>Cory Forsyth</a>.
+</script>
+
+</body>
+</html>
