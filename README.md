@@ -83,7 +83,7 @@ Default values are 25 and 1, respectively. Example change:
 
 == Demo
 
-See the jsbin here LINK for an demo app using the InfiniteScroll mixins.
+See the [jsbin here](http://jsbin.com/epepob/2/edit) for an demo app using the InfiniteScroll mixins.
 
 == Feedback
 
