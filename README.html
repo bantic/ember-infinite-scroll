@@ -109,10 +109,53 @@ events: {
 }
 [/code]
 
-Try it out in this jsbin. Clicking the 'get more' link loads another 10 fake widgets each time. Great! Last step is to do this automatically when the user scrolls to the bottom.
+Try it out in this jsbin LINK. Clicking the 'get more' link loads another 10 fake widgets each time. Great! Last step is to do this automatically when the user scrolls to the bottom.
 <br>
-How do we determine that the user has scrolled to the bottom? jQuery has some helpful functions for us here. `<em>$(document).height()</em>` gives the height of the entire document, and `<em>$(window).height()</em>` gives the height of the browser viewport. The difference of these two integers is the distance to the top of the viewport, which happens to be exactly what `<em>$(document).scrollTop()</em>` returns. When those quantities are equal, we know the user has scrolled to the bottom. We will add a listener to the window's "scroll" event to determine when the user has scrolled, so that we can check whether to load new content.
+How do we determine that the user has scrolled to the bottom? jQuery has some helpful functions for us here. `<em>$(document).height()</em>` gives the height of the entire document, and `<em>$(window).height()</em>` gives the height of the browser viewport. The difference of these two integers is the distance to the top of the viewport, which happens to be exactly what `<em>$(document).scrollTop()</em>` returns. When those quantities are equal, we know the user has scrolled to the bottom. We will add a listener to the window's "scroll" event to determine when the user has scrolled, so that we can check whether to load new content. We'll add `<em>didScroll</em>` and `<em>isScrolledToBottom</em>` methods to `<em>App.IndexView</em>`:
+[code]
+// App.IndexView
+// ...
+
+// this is called every time we scroll
+didScroll: function(){
+  if (this.isScrolledToBottom()) {
+    this.get('controller').send('getMore');
+  }
+},
+
+// we check if we are at the bottom of the page
+isScrolledToBottom: function(){
+  var distanceToViewportTop = (
+    $(document).height() - $(window).height());
+  var viewPortTop = $(document).scrollTop();
+
+  if (viewPortTop === 0) {
+    // if we are at the top of the page, don't do
+    // the infinite scroll thing
+    return false;
+  }
+
+  return (viewPortTop - distanceToViewportTop === 0);
+}
+[/code]
 <br>
-What's the most appropriate way in ember to attach an event listener like this? The view! We will now open up the `<em>App.IndexView</em>` and use ember's view lifecycle hooks to attach and detach a 'scroll' event listener on the window.
+And now we'll use Ember's `<em>didInsertElement</em>` and `<em>willDestroyElement</em>` to add and remove the scroll listener, respectively:
 <br>
-Before we do, there are two caveats. First jQuery's `<em>unbind</em>` call takes the function to stop being executed as its second argument. So to make sure we unbind the correct event
+[code]
+// App.IndexView
+didInsertElement: function(){
+  // we want to make sure 'this' inside `didScroll` refers
+  // to the IndexView, so we use jquery's `proxy` method to bind it
+  $(window).on('scroll', $.proxy(this.didScroll, this));
+},
+willDestroyElement: function(){
+  // have to use the same argument to `off` that we did to `on`
+  $(window).off('scroll', $.proxy(this.didScroll, this));
+}
+[/code]
+<br>
+Note that it's important that the second argument we give to `<em>$(window).off</em>` is the same function we gave to `<em>$(window).on`</em>, otherwise the 'off' call will remove all scroll listeners on the window, which is not what we want. Luckily, jQuery's `<em>proxy</em>` method is smart enough that it will return the same method when we call it with the same function name. See jQuery's documentation for more on `<em>.off()</em>` LINK, though, because in other cases it may be safer to use an explicitly named, bound function instead.
+<br>
+Now we have a fully working, end-to-end infinite scrolling solution! You can see a jsbin LINK of it here, where I've added a slight delay to the loading of new data to simulate it coming from an API with some latency.
+<br>
+If you would like to use this code in your own project, I have extracted all the infinite-scrolling-specific bits to a series of mixins that are available on github here LINK, along with instructions for mixing them into your project's route, controller and view.
