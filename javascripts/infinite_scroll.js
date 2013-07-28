@@ -5,19 +5,23 @@
   };
 
   InfiniteScroll.RouteEvents = {
+    // MUSt BE OVERRIDDEN
     getMore: function(){
-        var controller = this.get('controller'),
-            nextPage = controller.get('page') + 1,
-            perPage = controller.get('perPage'),
-            that = this,
-            items;
+      // throw new Error("The Route event `getMore` must be implemented");
+      var controller = this.get('controller'),
+          nextPage   = controller.get('page') + 1,
+          perPage    = controller.get('perPage'),
+          that       = this,
+          items;
 
-        Ember.run.later( function() {
-          items = that.events.fetchPage(nextPage, perPage);
-          controller.gotMore( items, nextPage);
-        }, 1000);
+      // simulate latency
+      Ember.run.later( function() {
+        items = that.events.fetchPage(nextPage, perPage);
+        controller.gotMore( items, nextPage);
+      }, 1000);
     },
     fetchPage: function(page, perPage){
+      // throw new Error("The Route event `fetchPage` must be implemented");
       var items = Em.A([]);
       var firstIndex = (page-1) * perPage;
       var lastIndex  = page * perPage;
@@ -49,17 +53,11 @@
   });
 
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
-    boundedDidScroll: function() {
-      if (this._boundedDidScroll) return this._boundedDidScroll;
-
-      this._boundedDidScroll = $.proxy(this.didScroll, this);
-      return this._boundedDidScroll;
-    },
     setupInfiniteScrollListener: function(){
-      $(window).bind('scroll', this.boundedDidScroll());
+      $(window).on('scroll', $.proxy(this.didScroll, this));
     },
     teardownInfiniteScrollListener: function(){
-      $(window).unbind('scroll', this.boundedDidScroll());
+      $(window).off('scroll', $.proxy(this.didScroll, this));
     },
     didScroll: function(){
       if (this.isScrolledToBottom()) {
@@ -67,14 +65,17 @@
       }
     },
     isScrolledToBottom: function(){
-      var distanceToTop = $(document).height() - $(window).height(),
-          top           = $(document).scrollTop();
+      var distanceToViewportTop = (
+        $(document).height() - $(window).height());
+      var viewPortTop = $(document).scrollTop();
 
-      if (top == 0) {
+      if (viewPortTop === 0) {
+        // if we are at the top of the page, don't do
+        // the infinite scroll thing
         return false;
       }
 
-      return (top - distanceToTop == 0);
+      return (viewPortTop - distanceToViewportTop === 0);
     }
   });
 
