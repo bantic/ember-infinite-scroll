@@ -1,4 +1,4 @@
-(function(window){
+(function(window, Ember, $){
   var InfiniteScroll = {
     PAGE:     1,  // default start page
     PER_PAGE: 25 // default per page
@@ -80,4 +80,4 @@
   });
 
   window.InfiniteScroll = InfiniteScroll;
-})(this);
+})(this, Ember, jQuery);

@@ -6,6 +6,28 @@
   <script type='text/javascript' src='javascripts/ember.js'></script>
   <script type='text/javascript' src='javascripts/infinite_scroll.js'></script>
 
+  <!-- for jsbin -->
+  <!--
+  <script src="http://c-sandbox.s3.amazonaws.com/ember/jquery.js"></script>
+  <script src="http://c-sandbox.s3.amazonaws.com/ember/handlebars-1.0.0-rc4.js"></script>
+  <script src="http://c-sandbox.s3.amazonaws.com/ember/ember-1.0.0-rc6.js"></script>
+  <script src="http://c-sandbox.s3.amazonaws.com/ember/infinite_scroll.js"></script>
+  -->
+  <!-- /for jsbin -->
+
+  <style type='text/css'>
+    p { width: 50%; }
+    ul { list-style-type: none; padding:0; margin:0; }
+    li {
+      background-color: #CCC;
+      height: 100px;
+      line-height: 100px;
+      width: 300px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
+
   <script type='text/javascript'>
 
   var App = Ember.Application.create();
@@ -39,14 +61,15 @@
 <body>
 
 <script data-template-name="application" type="text/x-handlebars">
+{{partial 'about'}}
 {{outlet}}
 </script>
 
 <script data-template-name="index" type="text/x-handlebars">
-<h2>Widgets ({{content.length}})</h2>
+<h2>Widgets (Page {{page}}: {{content.length}} total widgets)</h2>
 <ul>
   {{#each widget in controller}}
-    {{render 'widget' widget}}
+    <li>Widget: {{widget.name}}</li>
   {{/each}}
 </ul>
 
@@ -57,8 +80,12 @@
 {{/if}}
 </script>
 
-<script data-template-name="widget" type="text/x-handlebars">
-  <li>Widget: {{name}}</li>
+<script data-template-name="_about" type="text/x-handlebars">
+  <p>This is a jsbin to demonstrate an infinite scrolling pattern with
+  ember.js. For more details, see this blog post LINK or the
+  `InfinteScroll` ember add-on. LINK.
+  Created by <a href='http://twitter.com/bantic'>Cory Forsyth</a>.
+  </p>
 </script>
 
 </body>
