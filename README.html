@@ -60,7 +60,6 @@ We also will need to add `<em>page</em>` and `<em>perPage</em>` properties to th
 page: 1,
 perPage: 10,
 
-// ...
 getMore: function() {
   // don't load new data if we already are
   if (this.get('loadingMore')) return;
@@ -69,7 +68,7 @@ getMore: function() {
 
   // pass this action up the chain to the events hash on the route
   this.get('target').send('getMore');
-}
+},
 
 // Also add a method `gotMore` that the route can call back to
 // notify the controller that the new data is in and it can stop
@@ -78,7 +77,7 @@ gotMore: function(items, page) {
   this.set('loadingMore', false);
   this.set('page', page);
 
-  this.pushObject(items);
+  this.pushObjects(items);
 }
 
 /* Add `getMore` to the events hash on the App.IndexRoute */
@@ -109,7 +108,7 @@ events: {
 }
 [/code]
 
-Try it out in this jsbin LINK. Clicking the 'get more' link loads another 10 fake widgets each time. Great! Last step is to do this automatically when the user scrolls to the bottom.
+Try it out in this jsbin LINK jsbin1. Clicking the 'get more' link loads another 10 fake widgets each time. Great! Last step is to do this automatically when the user scrolls to the bottom.
 <br>
 How do we determine that the user has scrolled to the bottom? jQuery has some helpful functions for us here. `<em>$(document).height()</em>` gives the height of the entire document, and `<em>$(window).height()</em>` gives the height of the browser viewport. The difference of these two integers is the distance to the top of the viewport, which happens to be exactly what `<em>$(document).scrollTop()</em>` returns. When those quantities are equal, we know the user has scrolled to the bottom. We will add a listener to the window's "scroll" event to determine when the user has scrolled, so that we can check whether to load new content. We'll add `<em>didScroll</em>` and `<em>isScrolledToBottom</em>` methods to `<em>App.IndexView</em>`:
 [code]
@@ -156,6 +155,6 @@ willDestroyElement: function(){
 <br>
 Note that it's important that the second argument we give to `<em>$(window).off</em>` is the same function we gave to `<em>$(window).on`</em>, otherwise the 'off' call will remove all scroll listeners on the window, which is not what we want. Luckily, jQuery's `<em>proxy</em>` method is smart enough that it will return the same method when we call it with the same function name. See jQuery's documentation for more on `<em>.off()</em>` LINK, though, because in other cases it may be safer to use an explicitly named, bound function instead.
 <br>
-Now we have a fully working, end-to-end infinite scrolling solution! You can see a jsbin LINK of it here, where I've added a slight delay to the loading of new data to simulate it coming from an API with some latency.
+Now we have a fully working, end-to-end infinite scrolling solution! You can see a jsbin LINK jsbin2 of it here, where I've added a slight delay to the loading of new data to simulate it coming from an API with some latency.
 <br>
 If you would like to use this code in your own project, I have extracted all the infinite-scrolling-specific bits to a series of mixins that are available on github here LINK, along with instructions for mixing them into your project's route, controller and view.
