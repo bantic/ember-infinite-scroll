@@ -85,6 +85,72 @@ Default values are 25 and 1, respectively. Example change:
 
 See the [jsbin here](http://jsbin.com/epepob/2/edit) for an demo app using the InfiniteScroll mixins.
 
+All together, an example App using the mixins might look like this:
+
+```
+var App = Ember.Application.create();
+
+// Define the Infinite Scroll route events
+// separately so it's easier to see what
+// other events the IndexRoute ends up using
+App.InfiniteSrollRouteEvents = {
+  getMore: function(){
+    var controller = this.get('controller'),
+        nextPage   = controller.get('page') + 1,
+        perPage    = controller.get('perPage'),
+        items;
+
+    items = this.events.fetchPage(nextPage, perPage);
+    controller.gotMore(items, nextPage);
+  },
+
+  fetchPage: function(page, perPage){
+    var items = Em.A([]);
+    var firstIndex = (page-1) * perPage;
+    var lastIndex  = page * perPage;
+    for (var i = firstIndex; i < lastIndex; i++) {
+      items.pushObject({name:''+i});
+    }
+
+    return items;
+  }
+};
+
+App.IndexRoute = Ember.Route.extend({
+  model: function(){
+    var items = Em.A([]);
+    for (var i = 0; i < 10; i++) {
+      items.pushObject({name: ''+i});
+    }
+    return items;
+  },
+  events: $.extend({},
+    App.InfiniteScrollRouteEvents,
+    {
+      // other non-infinite-scroll-specific route events
+      // can go here
+    }
+  )
+});
+
+App.IndexController = Ember.ArrayController.extend(
+  InfiniteScroll.ControllerMixin,
+  {
+    // override InfiniteScroll's default `perPage`
+    perPage: 10
+  }
+);
+
+App.IndexView = Ember.View.extend(InfiniteScroll.ViewMixin, {
+  didInsertElement: function(){
+    this.setupInfiniteScrollListener();
+  },
+  willDestroyElement: function(){
+    this.teardownInfiniteScrollListener();
+  }
+});
+```
+
 == Feedback
 
 Questions or comments? I am on twitter @bantic. Pull requests welcome.
