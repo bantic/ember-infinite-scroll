@@ -4,35 +4,6 @@
     PER_PAGE: 25 // default per page
   };
 
-  InfiniteScroll.RouteEvents = {
-    // MUSt BE OVERRIDDEN
-    getMore: function(){
-      // throw new Error("The Route event `getMore` must be implemented");
-      var controller = this.get('controller'),
-          nextPage   = controller.get('page') + 1,
-          perPage    = controller.get('perPage'),
-          that       = this,
-          items;
-
-      // simulate latency
-      Ember.run.later( function() {
-        items = that.events.fetchPage(nextPage, perPage);
-        controller.gotMore( items, nextPage);
-      }, 1000);
-    },
-    fetchPage: function(page, perPage){
-      // throw new Error("The Route event `fetchPage` must be implemented");
-      var items = Em.A([]);
-      var firstIndex = (page-1) * perPage;
-      var lastIndex  = page * perPage;
-      for (var i = firstIndex; i < lastIndex; i++) {
-        items.pushObject({name:''+i});
-      }
-
-      return items;
-    }
-  };
-
   InfiniteScroll.ControllerMixin = Ember.Mixin.create({
     loadingMore: false,
     page: InfiniteScroll.PAGE,
