@@ -9,6 +9,7 @@ ember project.
 
  * Download and include `infinite_scroll.js` to your project. Include it after jQuery and Ember have been loaded.  
  * Mix in `InfiniteScroll.ControllerMixin` into your controller:
+
 ```
     App.SomeController = Ember.ArrayController.extend(
       InfiniteScroll.ControllerMixin,
@@ -17,9 +18,11 @@ ember project.
       }
     );
 ```
- * Mix in `InfiniteScroll.ViewMixin` into your view, and call the
+
+* Mix in `InfiniteScroll.ViewMixin` into your view, and call the
 `setupInfiniteScrollListener` and `teardownInfiniteScrollListener`
 hooks:
+
 ```
    App.SomeView = Ember.View.extend(
      InfiniteScroll.ViewMixin,
@@ -35,8 +38,10 @@ hooks:
      }
    );
 ```
- * Add and implement the methods `getMore` and `fetchPage` to the events appropriate route,
+
+* Add and implement the methods `getMore` and `fetchPage` in the `events` hash on the appropriate route,
 for example:
+
 ```
    App.SomeRoute = Ember.Route.extend({
      events: {
@@ -68,8 +73,10 @@ for example:
      }
    });
 ```
- * If necessary, set the `perPage` or initial `page` property on the controller.
-Default values are 25 and 1, respectively. Example change:
+
+* If necessary, set the `perPage` or initial `page` property on the controller.
+Default values are 25 and 1, respectively. Here's an example changing those values:
+
 ```
   App.SomeController = Ember.ArrayController.extend(
     InfiniteScroll.ControllerMixin,
@@ -80,14 +87,23 @@ Default values are 25 and 1, respectively. Example change:
     }
   );
 ```
- * If wanted, use the `loadingMore` property in your template to show a
-spinner or otherwise alert the user that new content is loading.
+
+* If wanted, use the `loadingMore` property in your template to show a
+spinner or otherwise alert the user that new content is loading. Example:
+
+```
+  {{#if loadingMore}}
+    Loading more data (automatically!)
+  {{else}}
+    <a href='#' {{action 'getMore'}}>Load more data (manually)</a>
+  {{/if}}
+```
 
 ## Demo
 
 See the [jsbin here](http://jsbin.com/epepob/4/edit) for a live demo app using the InfiniteScroll mixins.
 
-There is also a fully-functional example in the example/ dir.
+There is also a fully-functional example in the `example/` dir.
 
 All together, an example App using the mixins might look like this:
 
@@ -112,6 +128,8 @@ App.InfiniteSrollRouteEvents = {
     var items = Em.A([]);
     var firstIndex = (page-1) * perPage;
     var lastIndex  = page * perPage;
+    
+    // create some fake items
     for (var i = firstIndex; i < lastIndex; i++) {
       items.pushObject({name:''+i});
     }
@@ -123,6 +141,7 @@ App.InfiniteSrollRouteEvents = {
 App.IndexRoute = Ember.Route.extend({
   model: function(){
     var items = Em.A([]);
+    // create some fake items
     for (var i = 0; i < 10; i++) {
       items.pushObject({name: ''+i});
     }
@@ -140,7 +159,7 @@ App.IndexRoute = Ember.Route.extend({
 App.IndexController = Ember.ArrayController.extend(
   InfiniteScroll.ControllerMixin,
   {
-    // override InfiniteScroll's default `perPage`
+    // override InfiniteScroll's default `perPage` (optional)
     perPage: 10
   }
 );
