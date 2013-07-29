@@ -85,7 +85,7 @@ spinner or otherwise alert the user that new content is loading.
 
 ## Demo
 
-See the [jsbin here](http://jsbin.com/epepob/2/edit) for a live demo app using the InfiniteScroll mixins.
+See the [jsbin here](http://jsbin.com/epepob/4/edit) for a live demo app using the InfiniteScroll mixins.
 
 There is also a fully-functional example in the example/ dir.
 
