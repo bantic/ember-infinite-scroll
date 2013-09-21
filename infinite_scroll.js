@@ -9,17 +9,19 @@
     page: InfiniteScroll.PAGE,
     perPage: InfiniteScroll.PER_PAGE,
 
-    getMore: function(){
-      if (this.get('loadingMore')) return;
+    actions: {
+      getMore: function(){
+        if (this.get('loadingMore')) return;
 
-      this.set('loadingMore', true);
-      this.get('target').send('getMore');
-    },
+        this.set('loadingMore', true);
+        this.get('target').send('getMore');
+      },
 
-    gotMore: function(items, nextPage){
-      this.set('loadingMore', false);
-      this.pushObjects(items);
-      this.set('page', nextPage);
+      gotMore: function(items, nextPage){
+        this.set('loadingMore', false);
+        this.pushObjects(items);
+        this.set('page', nextPage);
+      }
     }
   });
 
