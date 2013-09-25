@@ -113,7 +113,7 @@ var App = Ember.Application.create();
 // Define the Infinite Scroll route actions
 // separately so it's easier to see what
 // other actions the IndexRoute ends up using
-App.InfiniteSrollRouteActions = {
+App.InfiniteScrollRouteActions = {
   actions: {
       getMore: function(){
         var controller = this.get('controller'),
