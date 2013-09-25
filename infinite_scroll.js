@@ -24,6 +24,17 @@
       }
     }
   });
+  
+  InfiniteScroll.RouteMixin = Ember.Mixin.create({
+    actions: {
+      getMore: function() {
+        throw new Error("Must override Route action `getMore`.");
+      },
+      fetchPage: function() {
+        throw new Error("Must override Route action `getMore`.");
+      }
+    }
+  });
 
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
     setupInfiniteScrollListener: function(){
