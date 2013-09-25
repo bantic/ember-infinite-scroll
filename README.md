@@ -39,19 +39,19 @@ hooks:
    );
 ```
 
-* Add and implement the methods `getMore` and `fetchPage` in the `events` hash on the appropriate route,
+* Add and implement the methods `getMore` and `fetchPage` in the `actions` hash on the appropriate route,
 for example:
 
 ```
    App.SomeRoute = Ember.Route.extend({
-     events: {
+     actions: {
        getMore: function(){
          var controller = this.get('controller'),
              nextPage   = controller.get('page') + 1,
              perPage    = controller.get('perPage'),
              items;
 
-         items = this.events.fetchPage(nextPage, perPage);
+         items = this.actions.fetchPage(nextPage, perPage);
          controller.gotMore(items, nextPage);
        },
 
@@ -110,31 +110,33 @@ All together, an example App using the mixins might look like this:
 ```
 var App = Ember.Application.create();
 
-// Define the Infinite Scroll route events
+// Define the Infinite Scroll route actions
 // separately so it's easier to see what
-// other events the IndexRoute ends up using
-App.InfiniteSrollRouteEvents = {
-  getMore: function(){
-    var controller = this.get('controller'),
-        nextPage   = controller.get('page') + 1,
-        perPage    = controller.get('perPage'),
-        items;
-
-    items = this.events.fetchPage(nextPage, perPage);
-    controller.gotMore(items, nextPage);
-  },
-
-  fetchPage: function(page, perPage){
-    var items = Em.A([]);
-    var firstIndex = (page-1) * perPage;
-    var lastIndex  = page * perPage;
+// other actions the IndexRoute ends up using
+App.InfiniteSrollRouteActions = {
+  actions: {
+      getMore: function(){
+        var controller = this.get('controller'),
+            nextPage   = controller.get('page') + 1,
+            perPage    = controller.get('perPage'),
+            items;
     
-    // create some fake items
-    for (var i = firstIndex; i < lastIndex; i++) {
-      items.pushObject({name:''+i});
-    }
-
-    return items;
+        items = this.actions.fetchPage(nextPage, perPage);
+        controller.gotMore(items, nextPage);
+      },
+    
+      fetchPage: function(page, perPage){
+        var items = Em.A([]);
+        var firstIndex = (page-1) * perPage;
+        var lastIndex  = page * perPage;
+        
+        // create some fake items
+        for (var i = firstIndex; i < lastIndex; i++) {
+          items.pushObject({name:''+i});
+        }
+    
+        return items;
+      }
   }
 };
 
@@ -147,10 +149,10 @@ App.IndexRoute = Ember.Route.extend({
     }
     return items;
   },
-  events: $.extend({},
-    App.InfiniteScrollRouteEvents,
+  actions: $.extend({},
+    App.InfiniteScrollRouteActions,
     {
-      // other non-infinite-scroll-specific route events
+      // other non-infinite-scroll-specific route actions
       // can go here
     }
   )
