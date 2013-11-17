@@ -1,0 +1,33 @@
+{
+  "name": "ember-infinite-scroll",
+  "version": "2.0.0",
+  "homepage": "https://github.com/bantic/ember-infinite-scroll",
+  "authors": [
+    "Cory Forsyth <cory.forsyth@gmail.com>"
+  ],
+  "description": "Infinite Scrolling Add-on for Ember",
+  "main": "ember_infinite_scroll.js",
+  "directory": "src/components",
+  "keywords": [
+    "ember",
+    "emberjs",
+    "scrolling",
+    "addon",
+    "infinite",
+    "scroll"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "src/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ember": "1.2.0-beta.4"
+  },
+  "devDependencies": {
+    "qunit": "1.12.0"
+  }
+}
