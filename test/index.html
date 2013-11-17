@@ -4,10 +4,18 @@
   <meta charset="utf-8">
   <title>Ember Infinite Scroll</title>
   <link rel="stylesheet" href="../src/components/qunit/qunit/qunit.css">
+
+  <style>
+    #qunit-fixture.scrollable {
+      position: static;
+      height: 5000px;
+    }
+  </style>
 </head>
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
+
   <script src="../src/components/jquery/jquery.js"></script>
   <script src="../src/components/handlebars/handlebars.js"></script>
   <script src="../src/components/ember/ember.js"></script>

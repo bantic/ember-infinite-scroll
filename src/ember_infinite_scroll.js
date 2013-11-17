@@ -1,4 +1,7 @@
+/*global Ember,jQuery,document*/
 (function(window, Ember, $){
+  'use strict';
+
   var InfiniteScroll = {
     PAGE:     1,  // default start page
     PER_PAGE: 25 // default per page
@@ -11,7 +14,7 @@
 
     actions: {
       getMore: function(){
-        if (this.get('loadingMore')) return;
+        if (this.get('loadingMore')) { return; }
 
         this.set('loadingMore', true);
         this.get('target').send('getMore');
@@ -24,14 +27,14 @@
       }
     }
   });
-  
+
   InfiniteScroll.RouteMixin = Ember.Mixin.create({
     actions: {
-      getMore: function() {
-        throw new Error("Must override Route action `getMore`.");
+      'infinite.getMore': function() {
+        throw new Error('Must override Route action `infinite.getMore`.');
       },
-      fetchPage: function() {
-        throw new Error("Must override Route action `getMore`.");
+      'infinite.fetchPage': function() {
+        throw new Error('Must override Route action `infinite.fetchPage`.');
       }
     }
   });
@@ -39,15 +42,18 @@
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
     setupInfiniteScrollListener: function(){
       $(window).on('scroll', $.proxy(this.didScroll, this));
-    },
+    }.on('didInsertElement'),
+
     teardownInfiniteScrollListener: function(){
       $(window).off('scroll', $.proxy(this.didScroll, this));
-    },
+    }.on('willDestroyElement'),
+
     didScroll: function(){
       if (this.isScrolledToBottom()) {
-        this.get('controller').send('getMore');
+        this.get('controller').send('infinite.getMore');
       }
     },
+
     isScrolledToBottom: function(){
       var distanceToViewportTop = (
         $(document).height() - $(window).height());
@@ -59,9 +65,9 @@
         return false;
       }
 
-      return (viewPortTop - distanceToViewportTop === 0);
+      return viewPortTop - distanceToViewportTop === 0;
     }
   });
 
-  window.InfiniteScroll = InfiniteScroll;
-})(this, Ember, jQuery);
+  Ember.InfiniteScroll = InfiniteScroll;
+}(this, Ember, jQuery));
