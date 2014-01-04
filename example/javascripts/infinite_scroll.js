@@ -59,7 +59,7 @@
         return false;
       }
 
-      return (viewPortLeft - distanceToViewportLeft === 0);
+      return (viewPortLeft >= distanceToViewportLeft);
     },
     isScrolledToBottom: function(){
       var distanceToViewportTop = (
@@ -72,7 +72,7 @@
         return false;
       }
 
-      return (viewPortTop - distanceToViewportTop === 0);
+      return (viewPortTop >= distanceToViewportTop);
     }
   });
 
