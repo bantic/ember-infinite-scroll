@@ -90,11 +90,17 @@
 
 <script data-template-name="index" type="text/x-handlebars">
 <h2>Widgets (Page {{page}}: {{content.length}} total widgets)</h2>
-<ul>
+
+<!-- // add class 'vertical' on outer-container for vertical scrolling (and remove 'horizontal' class)
+  //...or...
+  // add class 'horizontal' on outer-container for horizontal scrolling (and remove 'vertical' class) -->
+<div class="inf-scroll-outer-container vertical">
+  <ul class="inf-scroll-inner-container">
   {{#each widget in controller}}
     <li>Widget: {{widget.name}}</li>
   {{/each}}
-</ul>
+  </ul>
+</div>
 
 {{#if loadingMore}}
   Loading more...

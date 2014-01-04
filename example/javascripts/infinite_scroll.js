@@ -38,10 +38,10 @@
 
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
     setupInfiniteScrollListener: function(){
-      $(window).on('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').on('scroll', $.proxy(this.didScroll, this));
     },
     teardownInfiniteScrollListener: function(){
-      $(window).off('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').off('scroll', $.proxy(this.didScroll, this));
     },
     didScroll: function(){
       if (this.isScrolledToBottom()) {
@@ -50,8 +50,8 @@
     },
     isScrolledToBottom: function(){
       var distanceToViewportTop = (
-        $(document).height() - $(window).height());
-      var viewPortTop = $(document).scrollTop();
+        $('.inf-scroll-inner-container').height() - $('.inf-scroll-outer-container').height());
+      var viewPortTop = $('.inf-scroll-outer-container').scrollTop();
 
       if (viewPortTop === 0) {
         // if we are at the top of the page, don't do
