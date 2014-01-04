@@ -23,6 +23,35 @@
 
   var App = Ember.Application.create();
 
+  // Define the Infinite Scroll route actions
+  // separately so it's easier to see what
+  // other actions the IndexRoute ends up using
+  App.InfiniteScrollRouteActions = {
+    getMore: function(){
+      var controller = this.get('controller'),
+          nextPage   = controller.get('page') + 1,
+          perPage    = controller.get('perPage'),
+          that       = this,
+          items      = [];
+
+      // simulate latency
+      Ember.run.later( function() {
+        items = that.send('fetchPage', nextPage, perPage);
+      }, 500);
+    },
+
+    fetchPage: function(page, perPage){
+      var items = Em.A([]);
+      var firstIndex = (page-1) * perPage;
+      var lastIndex  = page * perPage;
+
+      for (var i = firstIndex; i < lastIndex; i++) {
+        items.pushObject({name:''+i});
+      }
+      this.get('controller').send('gotMore', items, page);
+    }
+  };
+
   App.IndexRoute = Ember.Route.extend({
     model: function(){
       var items = Em.A([]);
@@ -31,7 +60,10 @@
       }
       return items;
     },
-    events: $.extend({}, InfiniteScroll.RouteEvents)
+    actions: $.extend({}, App.InfiniteScrollRouteActions,
+    {
+      // put other non infinite-scroll related actions here.
+    })
   });
 
   App.IndexController = Ember.ArrayController.extend(
