@@ -17,6 +17,30 @@
       text-align: center;
       margin-bottom: 10px;
     }
+  /*  RECOMMENDED STYLING FOR INFINITE SCROLLING
+    Styling included for both HORIZONTAL and VERTICAL scrolling.
+    Select type of scrolling by adding either the class 'horizontal' or 'vertical' on the inf-scroll-outer-container. */
+  .inf-scroll-outer-container.horizontal {
+    overflow-x: scroll; /* <-- required for horizontal scrolling */
+    white-space: nowrap; /* <-- required for horizontal scrolling; optional for vertical scrolling*/
+    width: 200px; /* a set width is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container {
+    display: inline; /* <--'display: inline' for horizontal scrolling or remove/comment out for vertical scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container > * {
+    display: inline-block; /* <--'display: block' for vertical scrolling or either 'display: inline' or 'display: inline-block' for horizontal scrolling.*/
+  }
+  .inf-scroll-outer-container.vertical {
+    overflow-y: scroll; /* <-- required for vertical scrolling */
+    height: 200px; /* a set height is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.vetical > .inf-scroll-inner-container > * {
+    display: block;
+  }
+  .inf-scroll-inner-container {
+    overflow: visible; /* <-- required to ensure inner container fully contains the scroll items */
+  }
   </style>
 
   <script type='text/javascript'>

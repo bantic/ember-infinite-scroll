@@ -44,9 +44,22 @@
       $('.inf-scroll-outer-container').off('scroll', $.proxy(this.didScroll, this));
     },
     didScroll: function(){
-      if (this.isScrolledToBottom()) {
+      if (this.isScrolledToRight() || this.isScrolledToBottom()) {
         this.get('controller').send('getMore');
       }
+    },
+    isScrolledToRight: function(){
+      var distanceToViewportLeft = (
+        $('.inf-scroll-inner-container').width() - $('.inf-scroll-outer-container').width());
+      var viewPortLeft = $('.inf-scroll-outer-container').scrollLeft();
+
+      if (viewPortLeft === 0) {
+        // if we are at the left of the page, don't do
+        // the infinite scroll thing
+        return false;
+      }
+
+      return (viewPortLeft - distanceToViewportLeft === 0);
     },
     isScrolledToBottom: function(){
       var distanceToViewportTop = (
