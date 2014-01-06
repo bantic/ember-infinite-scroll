@@ -6,22 +6,84 @@
   <script type='text/javascript' src='javascripts/ember.js'></script>
   <script type='text/javascript' src='javascripts/infinite_scroll.js'></script>
 
-  <style type='text/css'>
-    p { width: 50%; }
-    ul { list-style-type: none; padding:0; margin:0; }
-    li {
-      background-color: #CCC;
-      height: 100px;
-      line-height: 100px;
-      width: 300px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
+  <style type="text/css">
+  /* OPTIONAL STYLING FOR DEMO PURPOSES ONLY */
+  ul.inf-scroll-inner-container {
+    padding: 0;
+  }
+  ul.inf-scroll-inner-container > li {
+    list-style: none;
+    margin: 10px;
+    padding: 10px;
+    background-color: #CCC;
+    line-height: 10px;
+    text-align: center;
+  }
+  .inf-scroll-outer-container {
+    width: 300px;
+    height: 200px;
+    margin: 20px;
+    background-color: yellow;
+  }
+
+  /*  RECOMMENDED STYLING FOR INFINITE SCROLLING
+    Styling included for both HORIZONTAL and VERTICAL scrolling.
+    Select type of scrolling by adding either the class 'horizontal' or 'vertical' on the inf-scroll-outer-container. */
+  .inf-scroll-outer-container.horizontal {
+    overflow-x: scroll; /* <-- required for horizontal scrolling */
+    white-space: nowrap; /* <-- required for horizontal scrolling; optional for vertical scrolling*/
+    width: 200px; /* a set width is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container {
+    display: inline; /* <--'display: inline' for horizontal scrolling or remove/comment out for vertical scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container > * {
+    display: inline-block; /* <--'display: block' for vertical scrolling or either 'display: inline' or 'display: inline-block' for horizontal scrolling.*/
+  }
+  .inf-scroll-outer-container.vertical {
+    overflow-y: scroll; /* <-- required for vertical scrolling */
+    height: 200px; /* a set height is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.vetical > .inf-scroll-inner-container > * {
+    display: block;
+  }
+  .inf-scroll-inner-container {
+    overflow: visible; /* <-- required to ensure inner container fully contains the scroll items */
+  }
   </style>
 
   <script type='text/javascript'>
 
   var App = Ember.Application.create();
+
+  // Define the Infinite Scroll route actions
+  // separately so it's easier to see what
+  // other actions the IndexRoute ends up using
+  App.InfiniteScrollRouteActions = {
+    getMore: function(){
+      var controller = this.get('controller'),
+          nextPage   = controller.get('page') + 1,
+          perPage    = controller.get('perPage'),
+          that       = this,
+          items      = [];
+
+      // simulate latency
+      Ember.run.later( function() {
+        items = that.send('fetchPage', nextPage, perPage);
+      }, 500);
+    },
+
+    fetchPage: function(page, perPage){
+      var items = Em.A([]);
+      var firstIndex = (page-1) * perPage;
+      var lastIndex  = page * perPage;
+
+      for (var i = firstIndex; i < lastIndex; i++) {
+        items.pushObject({name:''+i});
+      }
+      this.get('controller').send('gotMore', items, page);
+    }
+  };
 
   App.IndexRoute = Ember.Route.extend({
     model: function(){
@@ -31,7 +93,10 @@
       }
       return items;
     },
-    events: $.extend({}, InfiniteScroll.RouteEvents)
+    actions: $.extend({}, App.InfiniteScrollRouteActions,
+    {
+      // put other non infinite-scroll related actions here.
+    })
   });
 
   App.IndexController = Ember.ArrayController.extend(
@@ -58,11 +123,17 @@
 
 <script data-template-name="index" type="text/x-handlebars">
 <h2>Widgets (Page {{page}}: {{content.length}} total widgets)</h2>
-<ul>
+
+<!-- // add class 'vertical' on outer-container for vertical scrolling (and remove 'horizontal' class)
+  //...or...
+  // add class 'horizontal' on outer-container for horizontal scrolling (and remove 'vertical' class) -->
+<div class="inf-scroll-outer-container vertical">
+  <ul class="inf-scroll-inner-container">
   {{#each widget in controller}}
     <li>Widget: {{widget.name}}</li>
   {{/each}}
-</ul>
+  </ul>
+</div>
 
 {{#if loadingMore}}
   Loading more...

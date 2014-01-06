@@ -38,20 +38,33 @@
 
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
     setupInfiniteScrollListener: function(){
-      $(window).on('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').on('scroll', $.proxy(this.didScroll, this));
     },
     teardownInfiniteScrollListener: function(){
-      $(window).off('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').off('scroll', $.proxy(this.didScroll, this));
     },
     didScroll: function(){
-      if (this.isScrolledToBottom()) {
+      if (this.isScrolledToRight() || this.isScrolledToBottom()) {
         this.get('controller').send('getMore');
       }
     },
+    isScrolledToRight: function(){
+      var distanceToViewportLeft = (
+        $('.inf-scroll-inner-container').width() - $('.inf-scroll-outer-container').width());
+      var viewPortLeft = $('.inf-scroll-outer-container').scrollLeft();
+
+      if (viewPortLeft === 0) {
+        // if we are at the left of the page, don't do
+        // the infinite scroll thing
+        return false;
+      }
+
+      return (viewPortLeft - distanceToViewportLeft);
+    },
     isScrolledToBottom: function(){
       var distanceToViewportTop = (
-        $(document).height() - $(window).height());
-      var viewPortTop = $(document).scrollTop();
+        $('.inf-scroll-inner-container').height() - $('.inf-scroll-outer-container').height());
+      var viewPortTop = $('.inf-scroll-outer-container').scrollTop();
 
       if (viewPortTop === 0) {
         // if we are at the top of the page, don't do
@@ -59,7 +72,7 @@
         return false;
       }
 
-      return (viewPortTop - distanceToViewportTop === 0);
+      return (viewPortTop >= distanceToViewportTop);
     }
   });
 

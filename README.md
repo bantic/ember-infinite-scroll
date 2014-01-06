@@ -19,6 +19,20 @@ ember project.
     );
 ```
 
+* If necessary, set the `perPage` or initial `page` property on the controller.
+Default values are 25 and 1, respectively. Here's an example changing those values:
+
+```
+  App.SomeController = Ember.ArrayController.extend(
+    InfiniteScroll.ControllerMixin,
+    {
+      perPage: 50, // override the default and set to 50 per page
+      page: 3, // assume we are starting on the 3rd page
+      // your code here //
+    }
+  );
+```
+
 * Mix in `InfiniteScroll.ViewMixin` into your view, and call the
 `setupInfiniteScrollListener` and `teardownInfiniteScrollListener`
 hooks:
@@ -39,51 +53,89 @@ hooks:
    );
 ```
 
-* Add and implement the methods `getMore` and `fetchPage` in the `actions` hash on the appropriate route,
-for example:
-
+* Add a template to go with the view with `data-template-name` to match the view 
+(e.g. `IndexView` matches the data-template-name `index`.
+Note: the html class names `inf-scroll-outer-container` and `inf-scroll-inner-container` 
+are important and are required by infinite_scroll to identify the scrolling viewport.
+Specify the direction of the scrolling with the addition of 
+a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` as appropriate.
 ```
-   App.SomeRoute = Ember.Route.extend({
-     actions: {
-       getMore: function(){
-         var controller = this.get('controller'),
-             nextPage   = controller.get('page') + 1,
-             perPage    = controller.get('perPage'),
-             items;
-
-         items = this.actions.fetchPage(nextPage, perPage);
-         controller.gotMore(items, nextPage);
-       },
-
-       // returns the array of fetched items
-       fetchPage: function(page, perPage){
-         // find items
-         // fake example:
-         /*
-            var items = Em.A([]);
-            var firstIndex = (page-1) * perPage;
-            var lastIndex  = page * perPage;
-            for (var i = firstIndex; i < lastIndex; i++) {
-              items.pushObject({name:''+i});
-            }
-
-            return items;
-         */
-       }
-     }
-   });
+  <script data-template-name="some" type="text/x-handlebars">
+  <div class="inf-scroll-outer-container vertical">
+    <ul class="inf-scroll-inner-container">
+    {{#each widget in controller}}
+      <li>
+        // your code for each scroll item here
+      </li>
+    {{/each}}
+    </ul>
+  </div>
+  </script>
 ```
 
-* If necessary, set the `perPage` or initial `page` property on the controller.
-Default values are 25 and 1, respectively. Here's an example changing those values:
+* 
+
+* Add some appropriate styling.
 
 ```
-  App.SomeController = Ember.ArrayController.extend(
-    InfiniteScroll.ControllerMixin,
-    {
-      perPage: 50, // override the default and set to 50 per page
-      page: 3, // assume we are starting on the 3rd page
-      // your code here //
+  .inf-scroll-outer-container.horizontal {
+    overflow-x: scroll; /* <-- required for horizontal scrolling */
+    white-space: nowrap; /* <-- required for horizontal scrolling; 
+                                optional for vertical scrolling*/
+    width: 200px; /* a set width is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container {
+    display: inline; /* <--'display: inline' for horizontal scrolling 
+                            or remove/comment out for vertical scrolling */
+  }
+  .inf-scroll-outer-container.horizontal > .inf-scroll-inner-container > * {
+    display: inline-block; /* <--'display: block' for vertical scrolling 
+                                  or either 'display: inline' or 'display: inline-block'
+                                  for horizontal scrolling.*/
+  }
+  .inf-scroll-outer-container.vertical {
+    overflow-y: scroll; /* <-- required for vertical scrolling */
+    height: 200px; /* a set height is required for horizontal scrolling */
+  }
+  .inf-scroll-outer-container.vetical > .inf-scroll-inner-container > * {
+    display: block;
+  }
+  .inf-scroll-inner-container {
+    overflow: visible; /* <-- required to ensure inner container fully 
+                              contains the scroll items */
+  }
+```
+
+* Add and implement the methods `getMore` and `fetchPage`
+ in the `actions` hash on the appropriate route, for example:
+
+```
+  App.SomeRoute = Ember.Route.extend({
+    actions: {
+      getMore: function(){
+        var controller = this.get('controller'),
+           nextPage   = controller.get('page') + 1,
+           perPage    = controller.get('perPage'),
+           items;
+
+        items = this.send('fetchPage', nextPage, perPage);
+      },
+
+      // returns the array of fetched items
+      fetchPage: function(page, perPage){
+        // find items
+        // fake example:
+        /*
+          var items = Em.A([]);
+          var firstIndex = (page-1) * perPage;
+          var lastIndex  = page * perPage;
+
+          for (var i = firstIndex; i < lastIndex; i++) {
+            items.pushObject({name:''+i});
+          }
+          this.get('controller').send('gotMore', items, page);
+        */
+      }
     }
   );
 ```
@@ -104,77 +156,6 @@ spinner or otherwise alert the user that new content is loading. Example:
 See the [jsbin here](http://jsbin.com/epepob/4/edit) for a live demo app using the InfiniteScroll mixins.
 
 There is also a fully-functional example in the `example/` dir.
-
-All together, an example App using the mixins might look like this:
-
-```
-var App = Ember.Application.create();
-
-// Define the Infinite Scroll route actions
-// separately so it's easier to see what
-// other actions the IndexRoute ends up using
-App.InfiniteScrollRouteActions = {
-  actions: {
-      getMore: function(){
-        var controller = this.get('controller'),
-            nextPage   = controller.get('page') + 1,
-            perPage    = controller.get('perPage'),
-            items;
-    
-        items = this.actions.fetchPage(nextPage, perPage);
-        controller.gotMore(items, nextPage);
-      },
-    
-      fetchPage: function(page, perPage){
-        var items = Em.A([]);
-        var firstIndex = (page-1) * perPage;
-        var lastIndex  = page * perPage;
-        
-        // create some fake items
-        for (var i = firstIndex; i < lastIndex; i++) {
-          items.pushObject({name:''+i});
-        }
-    
-        return items;
-      }
-  }
-};
-
-App.IndexRoute = Ember.Route.extend({
-  model: function(){
-    var items = Em.A([]);
-    // create some fake items
-    for (var i = 0; i < 10; i++) {
-      items.pushObject({name: ''+i});
-    }
-    return items;
-  },
-  actions: $.extend({},
-    App.InfiniteScrollRouteActions,
-    {
-      // other non-infinite-scroll-specific route actions
-      // can go here
-    }
-  )
-});
-
-App.IndexController = Ember.ArrayController.extend(
-  InfiniteScroll.ControllerMixin,
-  {
-    // override InfiniteScroll's default `perPage` (optional)
-    perPage: 10
-  }
-);
-
-App.IndexView = Ember.View.extend(InfiniteScroll.ViewMixin, {
-  didInsertElement: function(){
-    this.setupInfiniteScrollListener();
-  },
-  willDestroyElement: function(){
-    this.teardownInfiniteScrollListener();
-  }
-});
-```
 
 ## Feedback
 
