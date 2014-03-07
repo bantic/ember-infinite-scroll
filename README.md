@@ -1,3 +1,9 @@
+## Demo
+
+See the [jsbin here](http://jsbin.com/famer/1) for a live demo app using the InfiniteScroll mixins.
+
+There is also a fully-functional example in the `example/` dir.
+
 ## Ember Infinite Scroll Mixin
 
 This repo contains a file `infinite_scroll.js` that adds a global
@@ -151,11 +157,6 @@ spinner or otherwise alert the user that new content is loading. Example:
   {{/if}}
 ```
 
-## Demo
-
-See the [jsbin here](http://jsbin.com/epepob/4/edit) for a live demo app using the InfiniteScroll mixins.
-
-There is also a fully-functional example in the `example/` dir.
 
 ## Feedback
 
