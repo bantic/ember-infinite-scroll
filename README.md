@@ -10,7 +10,7 @@ ember project.
  * Download and include `infinite_scroll.js` to your project. Include it after jQuery and Ember have been loaded.  
  * Mix in `InfiniteScroll.ControllerMixin` into your controller:
 
-```
+```javascript
     App.SomeController = Ember.ArrayController.extend(
       InfiniteScroll.ControllerMixin,
       {
@@ -37,7 +37,7 @@ Default values are 25 and 1, respectively. Here's an example changing those valu
 `setupInfiniteScrollListener` and `teardownInfiniteScrollListener`
 hooks:
 
-```
+```javascript
    App.SomeView = Ember.View.extend(
      InfiniteScroll.ViewMixin,
      {
@@ -59,7 +59,7 @@ Note: the html class names `inf-scroll-outer-container` and `inf-scroll-inner-co
 are important and are required by infinite_scroll to identify the scrolling viewport.
 Specify the direction of the scrolling with the addition of 
 a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` as appropriate.
-```
+```handlebars
   <script data-template-name="some" type="text/x-handlebars">
   <div class="inf-scroll-outer-container vertical">
     <ul class="inf-scroll-inner-container">
@@ -77,7 +77,7 @@ a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` a
 
 * Add some appropriate styling.
 
-```
+```CSS
   .inf-scroll-outer-container.horizontal {
     overflow-x: scroll; /* <-- required for horizontal scrolling */
     white-space: nowrap; /* <-- required for horizontal scrolling; 
@@ -109,7 +109,7 @@ a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` a
 * Add and implement the methods `getMore` and `fetchPage`
  in the `actions` hash on the appropriate route, for example:
 
-```
+```javascript
   App.SomeRoute = Ember.Route.extend({
     actions: {
       getMore: function(){
@@ -143,7 +143,7 @@ a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` a
 * If wanted, use the `loadingMore` property in your template to show a
 spinner or otherwise alert the user that new content is loading. Example:
 
-```
+```handlebars
   {{#if loadingMore}}
     Loading more data (automatically!)
   {{else}}
