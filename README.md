@@ -79,8 +79,6 @@ a class to the `inf-scroll-outer-container`: either `horizontal` or `vertical` a
   </script>
 ```
 
-* 
-
 * Add some appropriate styling.
 
 ```CSS
