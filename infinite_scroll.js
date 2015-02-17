@@ -24,7 +24,7 @@
       }
     }
   });
-  
+
   InfiniteScroll.RouteMixin = Ember.Mixin.create({
     actions: {
       getMore: function() {
@@ -38,10 +38,10 @@
 
   InfiniteScroll.ViewMixin = Ember.Mixin.create({
     setupInfiniteScrollListener: function(){
-      $('.inf-scroll-outer-container').on('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').on('scroll.infinite', Ember.run.bind(this, this.didScroll));
     },
     teardownInfiniteScrollListener: function(){
-      $('.inf-scroll-outer-container').off('scroll', $.proxy(this.didScroll, this));
+      $('.inf-scroll-outer-container').off('scroll.infinite');
     },
     didScroll: function(){
       if (this.isScrolledToRight() || this.isScrolledToBottom()) {
