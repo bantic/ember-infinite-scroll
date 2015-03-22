@@ -1,3 +1,7 @@
+## Deprecated
+
+This library is based on Ember 1.0 and uses pre- Ember-CLI semantics. If you are using Ember >= 1.0 and Ember-CLI, or Ember 2.0, please see the [ember-infinity addon](https://github.com/hhff/ember-infinity).
+
 ## Demo
 
 See the [jsbin here](http://jsbin.com/famer/1) for a live demo app using the InfiniteScroll mixins.
